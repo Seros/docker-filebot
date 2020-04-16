@@ -11,13 +11,13 @@ FROM jlesage/baseimage-gui:alpine-3.11-v3.5.3
 ARG DOCKER_IMAGE_VERSION=unknown
 
 # Define software versions.
-ARG FILEBOT_VERSION=4.9.0
-ARG OPENJDK_VERSION=13.0.2
-ARG ZULU_OPENJDK_VERSION=13.29.9
+ARG FILEBOT_VERSION=4.8.5
+ARG OPENJDK_VERSION=11.0.7
+ARG ZULU_OPENJDK_VERSION=11.39.15
 ARG CHROMAPRINT_VERSION=1.4.3
 
 # Define software download URLs.
-ARG FILEBOT_URL=https://get.filebot.net/filebot/FileBot_${FILEBOT_VERSION}/FileBot_${FILEBOT_VERSION}-portable.tar.xz
+ARG FILEBOT_URL=https://github.com/barry-allen07/FB-Mod/releases/download/${FILEBOT_VERSION}/FileBot_${FILEBOT_VERSION}-Linux-Portable.tar.xz
 ARG OPENJDK_URL=https://cdn.azul.com/zulu/bin/zulu${ZULU_OPENJDK_VERSION}-ca-jdk${OPENJDK_VERSION}-linux_musl_x64.tar.gz
 ARG CHROMAPRINT_URL=https://github.com/acoustid/chromaprint/archive/v${CHROMAPRINT_VERSION}.tar.gz
 
@@ -64,22 +64,6 @@ RUN \
     del-pkg build-dependencies && \
     rm -rf /tmp/* /tmp/.[!.]*
 
-# Install Java JNA.
-# Note that we only need the .so library.
-RUN \
-    add-pkg --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
-            --virtual build-dependencies \
-            java-jna-native && \
-    cp -a /usr/lib/libjnidispatch.so /usr/lib/libjnidispatch.so.bk && \
-    cp -a /usr/lib/libjnidispatch.so.5.1.0 /usr/lib/libjnidispatch.so.5.1.0.bk && \
-    # Cleanup.
-    del-pkg build-dependencies && \
-    rm -rf /tmp/* /tmp/.[!.]* && \
-    # Restore library.
-    mv /usr/lib/libjnidispatch.so.bk /usr/lib/libjnidispatch.so && \
-    mv /usr/lib/libjnidispatch.so.5.1.0.bk /usr/lib/libjnidispatch.so.5.1.0
-
 # Install dependencies.
 RUN \
     add-pkg --virtual build-dependencies curl && \
@@ -91,6 +75,7 @@ RUN \
         nss \
         gtk+2.0 \
         libmediainfo \
+        java-jna \
         ffmpeg \
         yad \
         && \
